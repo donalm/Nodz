@@ -4,7 +4,7 @@ import random
 import os
 print 'Env variable PYTHONPATH is: '+os.environ['PYTHONPATH']  #make sure the golaem data\crowd\glmCrowd\scripts directory is listed here
 
-from glm.Qtpy.Qt import QtGui, QtCore, QtWidgets
+from Qt import QtGui, QtCore, QtWidgets
 import nodz_main
 
 try:

@@ -2,12 +2,19 @@ import os
 import re
 import json
 
-from glm.Qtpy.Qt import QtGui, QtCore, QtWidgets
-import nodz_utils as utils
-import nodz_extra
+from Qt import QtWidgets
+from Qt import QtCore
+from Qt import QtGui
+from . import nodz_utils as utils
+from . import nodz_extra
 
 
 defaultConfigPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'default_config.json')
+
+try:
+    unicode
+except Exception:
+    unicode = str
 
 
 class Nodz(QtWidgets.QGraphicsView):
@@ -521,8 +528,8 @@ class Nodz(QtWidgets.QGraphicsView):
         """
         # Check for name clashes
         if name in self.scene().nodes.keys():
-            print 'A node with the same name already exists : {0}'.format(name)
-            print 'Node creation aborted !'
+            print('A node with the same name already exists : {0}'.format(name))
+            print('Node creation aborted !')
             return
         else:
             nodeItem = NodeItem(name=name, alternate=alternate, preset=preset,
@@ -553,8 +560,8 @@ class Nodz(QtWidgets.QGraphicsView):
 
         """
         if not node in self.scene().nodes.values():
-            print 'Node object does not exist !'
-            print 'Node deletion aborted !'
+            print('Node object does not exist !')
+            print('Node deletion aborted !')
             return
 
         if node in self.scene().nodes.values():
@@ -576,8 +583,8 @@ class Nodz(QtWidgets.QGraphicsView):
 
         """
         if not node in self.scene().nodes.values():
-            print 'Node object does not exist !'
-            print 'Node edition aborted !'
+            print('Node object does not exist !')
+            print('Node edition aborted !')
             return
 
         oldName = node.name
@@ -585,8 +592,8 @@ class Nodz(QtWidgets.QGraphicsView):
         if newName != None:
             # Check for name clashes
             if newName in self.scene().nodes.keys():
-                print 'A node with the same name already exists : {0}'.format(newName)
-                print 'Node edition aborted !'
+                print('A node with the same name already exists : {0}'.format(newName))
+                print('Node edition aborted !')
                 return
             else:
                 node.name = newName
@@ -645,13 +652,13 @@ class Nodz(QtWidgets.QGraphicsView):
 
         """
         if not node in self.scene().nodes.values():
-            print 'Node object does not exist !'
-            print 'Attribute creation aborted !'
+            print('Node object does not exist !')
+            print('Attribute creation aborted !')
             return
 
         if name in node.attrs:
-            print 'An attribute with the same name already exists : {0}'.format(name)
-            print 'Attribute creation aborted !'
+            print('An attribute with the same name already exists : {0}'.format(name))
+            print('Attribute creation aborted !')
             return
 
         node._createAttribute(name=name, index=index, preset=preset, plug=plug, socket=socket, dataType=dataType)
@@ -671,8 +678,8 @@ class Nodz(QtWidgets.QGraphicsView):
 
         """
         if not node in self.scene().nodes.values():
-            print 'Node object does not exist !'
-            print 'Attribute deletion aborted !'
+            print('Node object does not exist !')
+            print('Attribute deletion aborted !')
             return
 
         node._deleteAttribute(index)
@@ -698,14 +705,14 @@ class Nodz(QtWidgets.QGraphicsView):
 
         """
         if not node in self.scene().nodes.values():
-            print 'Node object does not exist !'
-            print 'Attribute creation aborted !'
+            print('Node object does not exist !')
+            print('Attribute creation aborted !')
             return
 
         if newName != None:
             if newName in node.attrs:
-                print 'An attribute with the same name already exists : {0}'.format(newName)
-                print 'Attribute edition aborted !'
+                print('An attribute with the same name already exists : {0}'.format(newName))
+                print('Attribute edition aborted !')
                 return
             else:
                 oldName = node.attrs[index]
@@ -801,13 +808,13 @@ class Nodz(QtWidgets.QGraphicsView):
                     isRoot &= (len(plug.connections)==0)
                 if isRoot:
                     rootNodes.append(node)
-        
+
         maxGraphWidth = 0
         rootGraphs = [[[0 for x in range(0)] for y in range(0)] for z in range(0)]
         for rootNode in rootNodes:
             rootGraph = [[0 for x in range(0)] for y in range(0)]
             rootGraph.append([rootNode])
-            
+
             currentGraphLevel = 0
             doNextGraphLevel = True
             while(doNextGraphLevel):
@@ -866,7 +873,7 @@ class Nodz(QtWidgets.QGraphicsView):
                         if node_pos.x() + nodeWidth > self.scene().width():
                             sceneRect.setWidth(node_pos.x() + nodeWidth + margin)
                             shouldResize = True
-                        if node_pos.y() < node.height : 
+                        if node_pos.y() < node.height :
                             sceneRect.setHeight(self.scene().height() - node_pos.y() + node.height + margin)
                             node_pos.setY(node.height + margin)
                             shouldResize = True
@@ -878,8 +885,8 @@ class Nodz(QtWidgets.QGraphicsView):
                             self.scene().setSceneRect(sceneRect)
 
                         if node_pos.x() < 0 or node_pos.x() > self.scene().width() or node_pos.y()<0 or node_pos.y() > self.scene().height():
-                            print "Warning: {0}: Invalid node position : ({1} ; {2}), frame dimension: ({3} ; {4}).".format(node.name, node_pos.x(), node_pos.y(), self.scene().width(), self.scene().height())
-                            
+                            print("Warning: {0}: Invalid node position : ({1} ; {2}), frame dimension: ({3} ; {4}).".format(node.name, node_pos.x(), node_pos.y(), self.scene().width(), self.scene().height()))
+
                         node.setPos(node_pos)
                         # Emit signal.
                         self.signal_NodeMoved.emit(node.name, node.pos())
@@ -935,8 +942,8 @@ class Nodz(QtWidgets.QGraphicsView):
         try:
             utils._saveData(filePath=filePath, data=data)
         except:
-            print 'Invalid path : {0}'.format(filePath)
-            print 'Save aborted !'
+            print('Invalid path : {0}'.format(filePath))
+            print('Save aborted !')
             return False
 
         # Emit signal.
@@ -955,8 +962,8 @@ class Nodz(QtWidgets.QGraphicsView):
         if os.path.exists(filePath):
             data = utils._loadData(filePath=filePath)
         else:
-            print 'Invalid path : {0}'.format(filePath)
-            print 'Load aborted !'
+            print('Invalid path : {0}'.format(filePath))
+            print('Load aborted !')
             return False
 
         # Apply nodes data.
@@ -1134,7 +1141,8 @@ class NodeScene(QtWidgets.QGraphicsScene):
 
         """
         # Emit signal.
-        self.signal_Dropped.emit(event.scenePos())
+        self.parent().signal_Dropped.emit(event)
+        #self.parent().node_dropped(event.scenePos(), event.mimeData().text())
 
         event.accept()
 
@@ -1329,8 +1337,8 @@ class NodeItem(QtWidgets.QGraphicsItem):
 
         """
         if name in self.attrs:
-            print 'An attribute with the same name already exists on this node : {0}'.format(name)
-            print 'Attribute creation aborted !'
+            print('An attribute with the same name already exists on this node : {0}'.format(name))
+            print('Attribute creation aborted !')
             return
 
         self.attrPreset = preset
@@ -2117,7 +2125,7 @@ class ConnectionItem(QtWidgets.QGraphicsPathItem):
 
         self._pen = QtGui.QPen(utils._convertDataToColor(config['connection_color']))
         self._pen.setWidth(config['connection_width'])
-        
+
         #make link selectable + selection style
         self._penSel = QtGui.QPen(utils._convertDataToColor(config['connection_sel_color']))
         self._penSel.setWidth(config['connection_sel_width'])
